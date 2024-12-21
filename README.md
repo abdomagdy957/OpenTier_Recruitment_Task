@@ -1,124 +1,80 @@
-# **Embedded Recruitment Task**
+![image](https://github.com/user-attachments/assets/0a6db147-67a8-4b39-a71f-0ffeb07f9909)## Server Implementation Analysis Report
+# 1. Test Suite Results Analysis
+ The updated implementation successfully passes all test cases that were previously marked as ignored:
+•	test_client_connection
+•	test_client_echo_message
+•	test_multiple_echo_messages
+•	test_multiple_clients
+•	test_client_add_request
+# The test suite demonstrates robust handling of:
+•	Single client connections
+•	Multiple sequential messages
+•	Concurrent client connections
+•	Addition request functionality
+•	Connection management and cleanup
 
-## **Overview**
+## 2. Bug Analysis and Fixes
+ Initial Implementation Bugs
+# 1.	Limited Buffer Size 
+o	Original: Fixed 512-byte buffer size
+o	Fix: Increased to 1024 bytes for larger message handling
+# 2.	Connection Handling 
+o	Original: Single-threaded blocking connections
+o	Fix: Implemented non-blocking accept with proper error handling
+# 3.	Resource Management 
+o	Original: No proper cleanup of client connections
+o	Fix: Added structured thread management and cleanup mechanisms
+# 4.	Error Handling 
+o	Original: Basic error propagation
+o	Fix: Enhanced error handling with proper logging and client disconnection handling
 
-Welcome to the **Embedded Recruitment Task**! This task is designed to assess your ability to analyze, debug, and enhance a server application written in Rust. The objective is to transition the server from a buggy, single-threaded implementation to a robust, multithreaded architecture capable of handling concurrent clients efficiently.
+## 3. Architectural Improvements
+# Threading Model
+•	Implemented a thread-per-client model using std::thread
+•	Added thread management using Arc<parking_lot::Mutex<Vec<JoinHandle>>>
+•	Implemented proper thread cleanup on server shutdown
+# Connection Management
+•	Added non-blocking listener with proper sleep intervals
+•	Implemented proper client disconnection detection
+•	Added thread-safe shutdown mechanism
+# Memory Management
+•	Implemented thread-safe shared state using Arc
+•	Added proper resource cleanup in the Server drop implementation
+•	Improved buffer management for message handling
+# Synchronization
+•	Used atomic boolean for server state management
+•	Implemented thread-safe client collection using parking_lot::Mutex
+•	Added proper synchronization for shared resources
 
-## **Task Description**
 
-### **What You’ll Be Working On**
-You’ll be provided with:
-- A buggy, single-threaded Rust server implementation.
-- A client test suite to evaluate the server’s behavior.
+ 
+## 4. Code Changes Documentation
+# Server Struct Changes
 
-Your task:
-1. Debug and fix the existing server code.
-2. Transition the server from single-threaded to multithreaded.
-3. Enhance the server to handle multiple clients concurrently while maintaining data consistency.
-4. Use and extend the provided test suite to ensure the server meets all requirements.
+![image](https://github.com/user-attachments/assets/2f9dfda8-8a5a-4b3d-aa4c-0aaa540cd776)
 
-### **Objectives**
-1. **Analyze the Existing Server Code:**
-   - Identify and fix intentional bugs in the provided implementation.
-   - Understand the limitations of the single-threaded architecture.
+•	Added Option<TcpListener> for better initialization control
+•	Introduced client_threads for managing active connections
+•	Implemented thread-safe state management
 
-2. **Transition to Multithreading:**
-   - Modify the server to handle multiple clients using Rust’s multithreading libs.
-   - Implement proper synchronization mechanisms to ensure thread safety.
+# Client Handling
 
-3. **Enhance Server Architecture:**
-   - Resolve any architectural flaws related to single-threaded assumptions.
-   - Optimize the server for scalability and concurrent request handling.
+![image](https://github.com/user-attachments/assets/3f93441b-b86e-4d6b-8066-750be29f973b)
 
-4. **Testing and Validation:**
-   - Run the provided test suite to verify functionality.
-   - Augment the test suite with additional test cases to cover edge cases and concurrency scenarios.
+•	Improved connection state tracking 
+•	Enhanced error handling 
+•	Added proper disconnection detection
 
-5. **Demonstrate Code Quality:**
-   - Write clean, maintainable, and well-documented code.
-   - Provide comments and documentation to explain your changes.
+# Threading Implementation
 
-# Submission Instructions
-Once you have completed the task to the best of your ability:
+![image](https://github.com/user-attachments/assets/b1483756-d39c-4b35-ab1f-b789ae3e6371)
 
-1. Prepare your solution, including:
-   - The updated server implementation.
-   - The test results and any additional test cases you added.
-   - Documentation (see the Deliverables section for details).
-2. Send your solution as a response to the recruitment email you received.
-   - Please ensure all required files are attached, or provide a link to a hosted repository (e.g., GitHub, GitLab) if your solution is hosted online.
+•	Implemented per-client thread spawning 
+•	Added proper thread lifecycle management 
+•	Implemented clean shutdown handling
 
-We understand the task may be challenging, and all solutions will be evaluated based on effort, approach, and quality. Even partial solutions that demonstrate thoughtful design and debugging skills are welcome.
+## 5. Test Suite Results
 
-## **Requirements**
+ ![image](https://github.com/user-attachments/assets/897d4b34-fb2a-45cf-927e-f663756d5969)
 
-### **Functional Requirements**
-- The server shall:
-  - Handle multiple clients concurrently.
-  - Maintain data consistency and avoid race conditions, deadlocks, and starvation.
-  - Log meaningful error messages and warnings.
 
-### **Technical Requirements**
-- Use Rust’s standard multithreading libraries or async runtime for concurrency.
-- Implement synchronization mechanisms to ensure thread safety.
-- Ensure the server adheres to performance requirements without unnecessary delays.
-
-## **Getting Started**
-
-### **Prerequisites**
-- Basic Rust knowledge [Rust book](https://doc.rust-lang.org/book/title-page.html)
-- Install Rust (latest stable version recommended). [Rust Installation Guide](https://www.rust-lang.org/tools/install)
-- Familiarity with Rust multithreading and asynchronous programming concepts. [Rust Concurrency](https://doc.rust-lang.org/book/ch16-00-concurrency.html)
-- Install protoc to compile a protobuf message [Protocol buffers](https://protobuf.dev/overview/)
-
-### **Repository Structure**
-```plaintext
-.
-|── proto/
-│   └── messages.proto        # IDL with messages server handle
-├── src/
-│   ├── main.rs               # Server implementation (single-threaded and buggy)
-│   └── lib.rs                # Core server logic
-├── tests/
-│   └── client_test.rs        # Client test suite
-├── .gitignore
-├── build.rs                  # Build script for compiling the Proto file
-├── Cargo.toml                # Rust dependencies and configuration
-├── README.md                 # Task instructions
-└── SOLUTION.md               # Place for your findings and analysis
-```
-
-## Running Tests
-
-To run the provided test suite:
-
-```bash
-cargo test
-```
-
-## Deliverables
-
-1. Updated Server Implementation
-   - Fully functional server that adheres to the multithreading requirements.
-2. Test Suite Results
-   - Evidence (e.g., logs) that your server passes all tests.
-   - Any additional test cases you added to the test suite.
-3. Documentation:
-   - Inline comments in the code to explain significant changes.
-   - Bug Analysis and Fix Report
-4. A brief document outlining:
-   - The identified bugs in the initial implementation.
-   - How architectural flaws were addressed.
-
-## Evaluation Criteria
-
-Your submission will be evaluated based on the following criteria:
-- **Correctness**: Does the updated server meet the functional and technical requirements?
-- **Bug Fixes**: How effectively were the provided bugs identified and resolved?
-- **Design Improvement**: Was the transition to multithreading executed appropriately? Were architectural flaws addressed?
-- **Testing**: Does the server pass all provided and additional tests? Are the new tests meaningful and comprehensive?
-- **Code Quality**: Is the code clean, maintainable, and well-documented?
-
-## Good Luck!
-
-We’re excited to see how you approach this task. If you have any questions or run into issues, don’t hesitate to reach out.
