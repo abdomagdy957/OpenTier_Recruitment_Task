@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/0a6db147-67a8-4b39-a71f-0ffeb07f9909)## Server Implementation Analysis Report
+## Server Implementation Analysis Report
 # 1. Test Suite Results Analysis
  The updated implementation successfully passes all test cases that were previously marked as ignored:
 •	test_client_connection
